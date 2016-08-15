@@ -1,0 +1,21 @@
+{
+  "name": "traces-solver",
+  "version": "0.1.0",
+  "description": "solver for the iOS game `logic traces`",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "logic",
+    "traces",
+    "iOS",
+    "game",
+    "solver"
+  ],
+  "author": "Xianming Zhong",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.15.0"
+  }
+}
