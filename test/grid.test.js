@@ -13,11 +13,11 @@ describe('initGrid', function() {
         });
     });
     it('3x3 - func', function() {
-        var grid = GridUtils.initGrid(3, function() {
-            return 123;
+        var grid = GridUtils.initGrid(3, function(i, j) {
+            return i * 3 + j;
         });
         GridUtils.traverseGrid(grid, function(i, j, ele) {
-            assert.equal(ele, 123);
+            assert.equal(ele, i * 3 + j);
             return true;
         });
     });
