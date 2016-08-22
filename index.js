@@ -46,6 +46,7 @@ function initCandidates(grid) {
         for (offset = 1, x = i + offset, y = j; offset <= ele && x < grid.length; x++) {
             result[x][y].candidates.push({x: i, y: j});
         }
+        return true;
     });
     return result;
 }
