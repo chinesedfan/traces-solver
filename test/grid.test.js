@@ -44,3 +44,41 @@ describe('traverseGrid', function() {
         assert.equal(isAll, false);
     });
 });
+describe('traversePair', function() {
+    var x, grid;
+    beforeEach(function() {
+        x = '';
+        grid = GridUtils.initGrid(3, function(i, j) {
+            return '' + (i * 3 + j);
+        });
+    });
+
+    it('0,0 to 0,2', function() {
+        GridUtils.traversePair(0,0, 0,2, function(i, j) {
+            x += grid[i][j];
+            return true;
+        });
+        assert.equal(x, '1');
+    });
+    it('0,0 to 2,0', function() {
+        GridUtils.traversePair(0,0, 2,0, function(i, j) {
+            x += grid[i][j];
+            return true;
+        });
+        assert.equal(x, '3');
+    });
+    it('0,2 to 2,2', function() {
+        GridUtils.traversePair(0,2, 2,2, function(i, j) {
+            x += grid[i][j];
+            return true;
+        });
+        assert.equal(x, '5');
+    });
+    it('2,0 to 2,2', function() {
+        GridUtils.traversePair(2,0, 2,2, function(i, j) {
+            x += grid[i][j];
+            return true;
+        });
+        assert.equal(x, '7');
+    });
+});
