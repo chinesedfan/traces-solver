@@ -23,13 +23,24 @@ describe('initGrid', function() {
     });
 });
 describe('traverseGrid', function() {
+    it('not break', function() {
+        var grid = GridUtils.initGrid(3, 123);
+        var x = 0;
+        var isAll = GridUtils.traverseGrid(grid, function(i, j, ele) {
+            x++;
+            return true;
+        });
+        assert.equal(x, 3 * 3);
+        assert.equal(isAll, true);
+    });
     it('break', function() {
         var grid = GridUtils.initGrid(3, 123);
         var x = 0;
-        GridUtils.traverseGrid(grid, function(i, j, ele) {
+        var isAll = GridUtils.traverseGrid(grid, function(i, j, ele) {
             x++;
             return x < 5;
         });
-        assert(x, 5);
+        assert.equal(x, 5);
+        assert.equal(isAll, false);
     });
 });
