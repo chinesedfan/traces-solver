@@ -103,9 +103,9 @@ function movePrev(n, c) {
 function moveNext(n, c) {
     if (c.invalid) return;
 
-    if (c.y < n) {
+    if (c.y < n - 1) {
         c.y++;
-    } else if (c.x < n) {
+    } else if (c.x < n - 1) {
         c.x++;
         c.y = 0;
     } else {
