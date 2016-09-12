@@ -1,4 +1,7 @@
 var GridUtils = require('./lib/grid');
+var Cells = require('./lib/cell');
+var EmptyCell = Cells.EmptyCell;
+var NumberCell = Cells.NumberCell;
 
 /**
  * Main entry
@@ -23,40 +26,45 @@ module.exports = function(grid) {
 }
 
 function initCandidates(grid) {
-    var result = GridUtils.initGrid(grid.length, function() {
-        return {index: 0, candidates: []};
+    var result = GridUtils.initGrid(grid.length, function(i, j) {
+        return grid[i][j] ? new NumberCell(i, j, grid[i][j]) : new EmptyCell(i, j);
     });
-    GridUtils.traverseGrid(grid, function(i, j, ele) {
-        if (!ele) return true;
+    GridUtils.traverseGrid(grid, function(i, j, value) {
+        if (!value) return true;
 
         var offset, x, y;
         // to left
-        for (offset = 1, x = i, y = j - offset; offset <= ele && y >= 0; y--) {
-            result[x][y].candidates.push({x: i, y: j});
+        for (offset = 1, x = i, y = j - offset; offset <= value && y >= 0; y--) {
+            result[x][y].candidates.push(result[i][j]);
+            result[x][y].distances.push(offset);
         }
         // to right
-        for (offset = 1, x = i, y = j + offset; offset <= ele && y < grid.length; y++) {
-            result[x][y].candidates.push({x: i, y: j});
+        for (offset = 1, x = i, y = j + offset; offset <= value && y < grid.length; y++) {
+            result[x][y].candidates.push(result[i][j]);
+            result[x][y].distances.push(offset);
         }
         // to bottom
-        for (offset = 1, x = i - offset, y = j; offset <= ele && x >= 0; x--) {
-            result[x][y].candidates.push({x: i, y: j});
+        for (offset = 1, x = i - offset, y = j; offset <= value && x >= 0; x--) {
+            result[x][y].candidates.push(result[i][j]);
+            result[x][y].distances.push(offset);
         }
         // to top
-        for (offset = 1, x = i + offset, y = j; offset <= ele && x < grid.length; x++) {
-            result[x][y].candidates.push({x: i, y: j});
+        for (offset = 1, x = i + offset, y = j; offset <= value && x < grid.length; x++) {
+            result[x][y].candidates.push(result[i][j]);
+            result[x][y].distances.push(offset);
         }
         return true;
     });
     return result;
 }
-function pruneCandidates(grid) {
-    GridUtils.traverseGrid(grid, function(i, j, ele) {
-        if (ele.candidates.length != 1) return true;
+function pruneCandidates(cells) {
+    GridUtils.traverseGrid(cells, function(i, j, cell) {
+        if (cell instanceof NumberCell || cell.candidates.length != 1) return true;
 
-        var target = ele.candidates[0];
-        GridUtils.traversePair(i, j, target.x, target.y, function(x, y) {
-            grid[x][y].candidates = [{x: target.x, y: target.y}];
+        var target = cell.candidates[0];
+        GridUtils.traversePair(target.x, target.y, i, j, function(x, y, off) {
+            cell[x][y].candidates = [target];
+            cell[x][y].distances = [off];
         });
         return true;
     });
@@ -64,19 +72,31 @@ function pruneCandidates(grid) {
 
 function tryToPlace(candidates, c) {
     var item = candidates[c.x][c.y];
+    // ignore if assigned by others
+    if (item.target) return true;
     // ignore if it is a number
-    if (!item.candidates.length) return true;
+    if (item instanceof NumberCell) return true;
     // no more candidates
-    if (item.index >= item.candidates.length) return false;
+    item.index++;
+    if (item.index >= item.candidates.length) {
+        item.index = -1;
+        return false;
+    }
 
     var target = item.candidates[item.index];
-    var backups = [];
-    var isOk = GridUtils.traversePair(c.x, c.y, target.x, target.y, function(x, y) {
-        var ele = candidates[x][y];
-        backups.push({x: x, y: y});
-        if (ele.target) return false;
+    // no long enough
+    if (target.rest < item.distances[item.index]) return tryToPlace(candidates, c);
 
-        ele.target = target;
+    var backups = [];
+    var isOk = GridUtils.traversePair(target.x, target.y, c.x, c.y, function(x, y, off, dir) {
+        var other = candidates[x][y];
+        if (other.target && other.target != target) return false;
+        if (other != item) {
+            other.target = target;
+            backups.push(other);
+        }
+
+        other.direction = dir;
         return true;
     });
 
@@ -84,7 +104,10 @@ function tryToPlace(candidates, c) {
         for (var i = 0; i < backups.length; i++) {
             backups[i].target = null;
         }
+        item.direction = '';
+        return tryToPlace(candidates, c);
     }
+    target.rest -= item.distances[item.index];
     return isOk;
 }
 
