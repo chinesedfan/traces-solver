@@ -62,6 +62,15 @@ describe('traversePair', function() {
         });
         assert.equal(x, '12');
     });
+    it('0,2 to 0,0', function() {
+        GridUtils.traversePair(0,2, 0,0, function(i, j, off, dir) {
+            x += grid[i][j];
+            assert.equal(off, j - 2);
+            assert.equal(dir, '<');
+            return true;
+        });
+        assert.equal(x, '10');
+    });
     it('0,0 to 2,0', function() {
         GridUtils.traversePair(0,0, 2,0, function(i, j, off, dir) {
             x += grid[i][j];
@@ -70,6 +79,15 @@ describe('traversePair', function() {
             return true;
         });
         assert.equal(x, '36');
+    });
+    it('2,0 to 0,0', function() {
+        GridUtils.traversePair(2,0, 0,0, function(i, j, off, dir) {
+            x += grid[i][j];
+            assert.equal(off, i - 2);
+            assert.equal(dir, '^');
+            return true;
+        });
+        assert.equal(x, '30');
     });
     it('0,2 to 2,2', function() {
         GridUtils.traversePair(0,2, 2,2, function(i, j, off, dir) {
@@ -80,6 +98,15 @@ describe('traversePair', function() {
         });
         assert.equal(x, '58');
     });
+    it('2,2 to 0,2', function() {
+        GridUtils.traversePair(2,2, 0,2, function(i, j, off, dir) {
+            x += grid[i][j];
+            assert.equal(off, i - 2);
+            assert.equal(dir, '^');
+            return true;
+        });
+        assert.equal(x, '52');
+    });
     it('2,0 to 2,2', function() {
         GridUtils.traversePair(2,0, 2,2, function(i, j, off, dir) {
             x += grid[i][j];
@@ -88,5 +115,14 @@ describe('traversePair', function() {
             return true;
         });
         assert.equal(x, '78');
+    });
+    it('2,2 to 2,0', function() {
+        GridUtils.traversePair(2,2, 2,0, function(i, j, off, dir) {
+            x += grid[i][j];
+            assert.equal(off, j - 2);
+            assert.equal(dir, '<');
+            return true;
+        });
+        assert.equal(x, '76');
     });
 });
