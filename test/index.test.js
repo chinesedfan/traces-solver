@@ -10,6 +10,15 @@ describe('traces solver', function() {
 
         assert.equal(printResult(Solver(grid)), '<1\n1>');
     });
+    it('3x3', function() {
+        var grid = [
+            [0, 0, 2],
+            [0, 1, 0],
+            [3, 0, 0]
+        ];
+
+        assert.equal(printResult(Solver(grid)), '<<2\n^1>\n3>>');
+    });
 });
 
 function printResult(cells) {
