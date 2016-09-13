@@ -34,22 +34,22 @@ function initCandidates(grid) {
 
         var offset, x, y;
         // to left
-        for (offset = 1, x = i, y = j - offset; offset <= value && y >= 0; y--) {
+        for (offset = 1, x = i, y = j - offset; offset <= value && y >= 0; offset++, y--) {
             result[x][y].candidates.push(result[i][j]);
             result[x][y].distances.push(offset);
         }
         // to right
-        for (offset = 1, x = i, y = j + offset; offset <= value && y < grid.length; y++) {
+        for (offset = 1, x = i, y = j + offset; offset <= value && y < grid.length; offset++, y++) {
             result[x][y].candidates.push(result[i][j]);
             result[x][y].distances.push(offset);
         }
         // to bottom
-        for (offset = 1, x = i - offset, y = j; offset <= value && x >= 0; x--) {
+        for (offset = 1, x = i - offset, y = j; offset <= value && x >= 0; offset++, x--) {
             result[x][y].candidates.push(result[i][j]);
             result[x][y].distances.push(offset);
         }
         // to top
-        for (offset = 1, x = i + offset, y = j; offset <= value && x < grid.length; x++) {
+        for (offset = 1, x = i + offset, y = j; offset <= value && x < grid.length; offset++, x++) {
             result[x][y].candidates.push(result[i][j]);
             result[x][y].distances.push(offset);
         }
