@@ -14,12 +14,14 @@ module.exports = function(grid) {
     var candidates = initCandidates(grid);
     pruneCandidates(candidates);
 
-    var c = {x: 0, y: 0};
+    var c = {x: 0, y: 0, backward: false};
     while (!c.invalid) {
         if (tryToPlace(candidates, c)) {
             moveNext(n, c);
+            c.backward = false;
         } else {
             movePrev(n, c);
+            c.backward = true;
         }
     }
     return candidates;
@@ -73,12 +75,19 @@ function pruneCandidates(cells) {
 function tryToPlace(candidates, c) {
     var item = candidates[c.x][c.y];
     // ignore if assigned by others
-    if (item.target) return true;
+    if (item.target) return !c.backward;
     // ignore if it is a number
-    if (item instanceof NumberCell) return true;
-    // no more candidates
+    if (item instanceof NumberCell) return !c.backward;
+
+    if (c.backward && item.index >= 0) {
+        // backward, recover the previous choice
+        item.candidates[item.index].rest += item.distances[item.index];
+    }
+    
     item.index++;
+
     if (item.index >= item.candidates.length) {
+        // no more candidates
         item.index = -1;
         return false;
     }
