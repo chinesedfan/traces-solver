@@ -16,6 +16,5 @@
   "author": "Xianming Zhong",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.15.0"
   }
 }
