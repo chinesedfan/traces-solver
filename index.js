@@ -10,6 +10,8 @@ var NumberCell = Cells.NumberCell;
  * @return {Array} the solved grid, whose elements are {x: x, y: y}
  */
 module.exports = function(grid) {
+    validateGrid(grid);
+
     var n = grid.length;
     var candidates = initCandidates(grid);
     pruneCandidates(candidates);
@@ -25,6 +27,18 @@ module.exports = function(grid) {
         }
     }
     return candidates;
+}
+
+function validateGrid(grid) {
+    var sum = grid.length * grid.length;
+    GridUtils.traverseGrid(grid, function(i, j, value) {
+        if (value) {
+            sum -= value + 1;
+        }
+        return true;
+    });
+
+    if (sum) throw new Error('invalid grid');
 }
 
 function initCandidates(grid) {
