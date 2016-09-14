@@ -81,7 +81,8 @@ function tryToPlace(candidates, c) {
 
     if (c.backward && item.index >= 0) {
         // backward, recover the previous choice
-        item.candidates[item.index].rest += item.distances[item.index];
+        item.candidates[item.index].rest += item.cost;
+        item.cost = 0;
     }
     
     item.index++;
@@ -93,31 +94,36 @@ function tryToPlace(candidates, c) {
     }
 
     var target = item.candidates[item.index];
-    // no long enough
-    if (target.rest < item.distances[item.index]) return tryToPlace(candidates, c);
-
     var backups = [];
     var isOk = GridUtils.traversePair(target.x, target.y, c.x, c.y, function(x, y, off, dir) {
         var other = candidates[x][y];
-        if (other.target && other.target != target) return false;
-        if (other != item) {
-            other.target = target;
-            backups.push(other);
+        if (other == item) {
+            item.direction = dir;
+            return true;
         }
+        // check confirmed target
+        if (other.target) return other.target == target;
+        if (other.index >= 0) return other.candidates[other.index] == target;
 
+        other.target = target;
         other.direction = dir;
+        backups.push(other);
+
         return true;
     });
 
-    if (!isOk) {
+    if (!isOk || backups.length + 1 > target.rest) {
         for (var i = 0; i < backups.length; i++) {
             backups[i].target = null;
+            backups[i].direction = '';
         }
         item.direction = '';
         return tryToPlace(candidates, c);
     }
-    target.rest -= item.distances[item.index];
-    return isOk;
+
+    item.cost = backups.length + 1;
+    target.rest -= item.cost;
+    return true;
 }
 
 function movePrev(n, c) {
