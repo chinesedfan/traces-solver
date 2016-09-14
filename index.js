@@ -95,7 +95,13 @@ function pruneCandidates(cells) {
 function tryToPlace(candidates, c) {
     var item = candidates[c.x][c.y];
     // ignore if assigned by others
-    if (item.target) return !c.backward;
+    if (item.target) {
+        if (c.backward) {
+            item.target = null;
+            item.direction = '';
+        }
+        return !c.backward;
+    }
     // ignore if it is a number
     if (item instanceof NumberCell) return !c.backward;
 
