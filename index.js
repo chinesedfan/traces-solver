@@ -26,6 +26,7 @@ module.exports = function(grid) {
             c.backward = true;
         }
     }
+    if (c.x == 0) throw new Error('failed to solve');
     return candidates;
 }
 
