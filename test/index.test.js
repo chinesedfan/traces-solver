@@ -19,6 +19,16 @@ describe('traces solver', function() {
 
         assert.equal(printResult(Solver(grid)), '<<2\n^1>\n3>>');
     });
+    it('4x4', function() {
+        var grid = [
+            [3, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 1, 0, 3],
+            [3, 0, 0, 0]
+        ];
+
+        assert.equal(printResult(Solver(grid)), '3>>^\nv1>^\n^1>3\n3>>v');
+    });
 });
 
 function printResult(cells) {
