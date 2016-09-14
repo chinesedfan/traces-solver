@@ -37,21 +37,25 @@ function initCandidates(grid) {
         var offset, x, y;
         // to left
         for (offset = 1, x = i, y = j - offset; offset <= value && y >= 0; offset++, y--) {
+            if (result[x][y] instanceof NumberCell) continue;
             result[x][y].candidates.push(result[i][j]);
             result[x][y].distances.push(offset);
         }
         // to right
         for (offset = 1, x = i, y = j + offset; offset <= value && y < grid.length; offset++, y++) {
+            if (result[x][y] instanceof NumberCell) continue;
             result[x][y].candidates.push(result[i][j]);
             result[x][y].distances.push(offset);
         }
         // to bottom
         for (offset = 1, x = i - offset, y = j; offset <= value && x >= 0; offset++, x--) {
+            if (result[x][y] instanceof NumberCell) continue;
             result[x][y].candidates.push(result[i][j]);
             result[x][y].distances.push(offset);
         }
         // to top
         for (offset = 1, x = i + offset, y = j; offset <= value && x < grid.length; offset++, x++) {
+            if (result[x][y] instanceof NumberCell) continue;
             result[x][y].candidates.push(result[i][j]);
             result[x][y].distances.push(offset);
         }
@@ -65,8 +69,8 @@ function pruneCandidates(cells) {
 
         var target = cell.candidates[0];
         GridUtils.traversePair(target.x, target.y, i, j, function(x, y, off) {
-            cell[x][y].candidates = [target];
-            cell[x][y].distances = [off];
+            cells[x][y].candidates = [target];
+            cells[x][y].distances = [off];
         });
         return true;
     });
