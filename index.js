@@ -86,6 +86,7 @@ function pruneCandidates(cells) {
         GridUtils.traversePair(target.x, target.y, i, j, function(x, y, off) {
             cells[x][y].candidates = [target];
             cells[x][y].distances = [off];
+            return true;
         });
         return true;
     });
