@@ -63,22 +63,22 @@ Grid.prototype = {
                 dir: '>'
             });
         }
-        // to bottom
+        // to top
         for (offset = 1, x = i - offset, y = j; offset <= value && x >= 0; offset++, x--) {
             if (cells[x][y] instanceof NumberCell) break;
             cells[x][y].candidates.push({
                 cell: cells[i][j],
                 cost: offset,
-                dir: 'v'
+                dir: '^'
             });
         }
-        // to top
+        // to bottom
         for (offset = 1, x = i + offset, y = j; offset <= value && x < this.size; offset++, x++) {
             if (cells[x][y] instanceof NumberCell) break;
             cells[x][y].candidates.push({
                 cell: cells[i][j],
                 cost: offset,
-                dir: '^'
+                dir: 'v'
             });
         }
     },
@@ -158,35 +158,48 @@ Grid.prototype = {
         // ignore if it is assigned by another cell
         if (cell.assigned) {
             if (!this.forward) {
-                cell.unpick();
+                cell.unpick(this.cells);
             }
             return this.forward;
         }
 
         var picked = cell.picked + 1;
+        while (picked < cell.candidates.length) {
+            var item = cell.candidates[picked];
+            // check first
+            var already = 0;
+            var isOK = item.cell.loopToCell(cell, function(x, y, cost, dir) {
+                var other = this.cells[x][y];
+                if (other == cell) {
+                    return item.cell.rest >= cost - already;
+                } else {
+                    if (other.picked < 0) return true;
+                    if (other.candidates[other.picked].cell == item.cell) {
+                        already++;
+                        if (already != cost) error('find a whole');
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }.bind(this));
+
+            if (isOK) break;
+            picked++;
+        }
         // no more candidates
         if (picked >= cell.candidates.length) {
-            cell.unpick();
+            cell.unpick(this.cells);
             return false;
         }
 
-        var item = cell.candidates[picked];
-        // check first
-        var isOK = item.cell.loopToCell(cell, function(x, y, cost, dir) {
-            var other = this.cells[x][y];
-            if (other == cell) {
-                return item.cell.rest >= cost;
-            } else {
-                return other.picked < 0;
-            }
-        }.bind(this));
-        if (!isOK) return false;
-
         // update later
+        item.cell.rest -= item.cost - already;
         item.cell.loopToCell(cell, function(x, y, cost, dir) {
             var other = this.cells[x][y];
             if (other == cell) {
                 other.picked = picked;
+                other.already = already;
             } else {
                 for (var i = 0; i < other.candidates.length; i++) {
                     if (other.candidates[i].cell == item.cell) {
