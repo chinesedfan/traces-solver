@@ -111,10 +111,20 @@ Grid.prototype = {
 
     solve: function() {
         this.forward = true;
-        this.cursor = {
-            x: 0,
-            y: 0
-        };
+        // find the first unpicked
+        for (var i = 0; i < this.size; i++) {
+            for (var j = 0; j < this.size; j++) {
+                var cell = this.cells[i][j];
+                if (cell instanceof NumberCell || cell.picked >= 0) continue;
+
+                this.cursor = {
+                    x: i,
+                    y: j
+                };
+                break;
+            }
+            if (this.cursor) break;
+        }
 
         while (!this.stopped) {
             if (this.step()) {
@@ -164,10 +174,11 @@ Grid.prototype = {
         // check first
         var isOK = item.cell.loopToCell(cell, function(x, y, cost, dir) {
             var other = this.cells[x][y];
-            if (other.picked >= 0) return false;
-
-            if (other == cell && item.cell.rest < cost) return false;
-            return true;
+            if (other == cell) {
+                return item.cell.rest >= cost;
+            } else {
+                return other.picked < 0;
+            }
         }.bind(this));
         if (!isOK) return false;
 
@@ -187,7 +198,7 @@ Grid.prototype = {
                 if (i == other.candidates.length) error('cannot find');
             }
             return true;
-        });
+        }.bind(this));
         return true;
     },
     movePrev: function() {
