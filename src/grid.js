@@ -164,9 +164,11 @@ Grid.prototype = {
         }
 
         var picked = cell.picked + 1;
+        // need to unpick
+        cell.unpick(this.cells);
+        // check each one
         while (picked < cell.candidates.length) {
             var item = cell.candidates[picked];
-            // check first
             var already = 0;
             var isOK = item.cell.loopToCell(cell, function(x, y, cost, dir) {
                 var other = this.cells[x][y];
