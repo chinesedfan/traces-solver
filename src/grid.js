@@ -6,14 +6,14 @@ function Grid(grid) {
     this.grid = grid;
     this.size = grid.length;
 
-    this.validate();
+    this.initValidate();
     this.initCells();
     this.initCandidates();
-    this.pruneCandidates();
+    // this.pruneCandidates();
 }
 Grid.prototype = {
     constructor: Grid,
-    validate: function() {
+    initValidate: function() {
     },
     initCells: function() {
         this.cells = [];
@@ -131,12 +131,51 @@ Grid.prototype = {
                 this.forward = true;
                 this.moveNext();
             } else {
+                if (this.debug) {
+                    console.log('\n##', this.cursor.x, this.cursor.y);
+                    this.print();
+                    this.validate();
+                }
+
                 this.forward = false;
                 this.movePrev();
             }
         }
 
         if (this.cursor.x == 0 && this.cursor.y == 0) error('failed to solve');
+    },
+    validate: function() {
+        var grid = [];
+
+        // clone the grid
+        var row;
+        for (var i = 0; i < this.size; i++) {
+            row = [];
+            for (var j = 0; j < this.size; j++) {
+                row.push(this.grid[i][j]);
+            }
+            grid.push(row);
+        }
+        // update the rest
+        for (var i = 0; i < this.size; i++) {
+            for (var j = 0; j < this.size; j++) {
+                var cell = this.cells[i][j];
+                if (cell instanceof NumberCell) continue;
+                if (cell.picked < 0) continue;
+
+                var item = cell.candidates[cell.picked];
+                grid[item.cell.x][item.cell.y]--;
+            }
+        }
+        // validate the grid
+        for (var i = 0; i < this.size; i++) {
+            for (var j = 0; j < this.size; j++) {
+                var cell = this.cells[i][j];
+                if (cell instanceof EmptyCell) continue;
+
+                if (grid[i][j] != cell.rest) error('wrong rest');
+            }
+        }
     },
     print: function() {
         var result = [];
@@ -145,7 +184,25 @@ Grid.prototype = {
 
             for (var j = 0; j < this.size; j++) {
                 var cell = this.cells[i][j];
-                result.push(cell.toString());
+                var str = cell.toString();
+                if (this.debug) {
+                    if (cell instanceof NumberCell) str = cell.rest;
+                    else if (cell.assigned) str = 'x';
+                }
+                result.push(str);
+            }
+
+            if (!this.debug) continue;
+
+            result.push('  ');
+            for (var j = 0; j < this.size; j++) {
+                var cell = this.cells[i][j];
+                result.push(cell.value || '.');
+            }
+            result.push('  ');
+            for (var j = 0; j < this.size; j++) {
+                var cell = this.cells[i][j];
+                result.push(cell.already || '.');
             }
         }
         console.log(result.join(''));
@@ -157,9 +214,6 @@ Grid.prototype = {
         if (cell instanceof NumberCell) return this.forward;
         // ignore if it is assigned by another cell
         if (cell.assigned) {
-            if (!this.forward) {
-                cell.unpick(this.cells);
-            }
             return this.forward;
         }
 
@@ -191,7 +245,6 @@ Grid.prototype = {
         }
         // no more candidates
         if (picked >= cell.candidates.length) {
-            cell.unpick(this.cells);
             return false;
         }
 
@@ -202,7 +255,7 @@ Grid.prototype = {
             if (other == cell) {
                 other.picked = picked;
                 other.already = already;
-            } else {
+            } else if (other.picked < 0) {
                 for (var i = 0; i < other.candidates.length; i++) {
                     if (other.candidates[i].cell == item.cell) {
                         other.picked = i;

@@ -24,7 +24,7 @@ EmptyCell.prototype = Object.assign({}, Cell.prototype, {
             var item = this.candidates[this.picked];
             item.cell.rest += item.cost - this.already;
             item.cell.loopToCell(this, function(x, y, cost, dir) {
-                if (cost < this.already) return true;
+                if (cost <= this.already) return true;
 
                 var other = cells[x][y];
                 other.picked = -1;
