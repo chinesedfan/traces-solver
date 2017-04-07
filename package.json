@@ -13,6 +13,11 @@
     "game",
     "solver"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chinesedfan/traces-solver.git"
+  },
+  "homepage": "https://github.com/chinesedfan/traces-solver",
   "author": "Xianming Zhong",
   "license": "MIT",
   "dependencies": {
