@@ -5,6 +5,8 @@ var NumberCell = require('./numbercell.js');
 function Grid(grid) {
     this.grid = grid;
     this.size = grid.length;
+    this.debug = false;
+    this.log = console.log;
 
     this.initValidate();
     this.initCells();
@@ -132,8 +134,10 @@ Grid.prototype = {
                 this.moveNext();
             } else {
                 if (this.debug) {
-                    console.log('\n##', this.cursor.x, this.cursor.y);
+                    this.log('##', this.cursor.x, this.cursor.y);
                     this.print();
+                    this.log('');
+
                     this.validate();
                 }
 
@@ -177,7 +181,7 @@ Grid.prototype = {
             }
         }
     },
-    print: function() {
+    print: function(emit) {
         var result = [];
         for (var i = 0; i < this.size; i++) {
             if (i) result.push('\n');
@@ -205,7 +209,11 @@ Grid.prototype = {
                 result.push(cell.already || '.');
             }
         }
-        console.log(result.join(''));
+
+        result = result.join('');
+        if (emit) return result;
+
+        this.log(result);
     },
 
     step: function() {
