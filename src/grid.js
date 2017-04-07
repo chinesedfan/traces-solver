@@ -16,6 +16,19 @@ function Grid(grid) {
 Grid.prototype = {
     constructor: Grid,
     initValidate: function() {
+        var sum = this.size * this.size;
+
+        for (var i = 0; i < this.size; i++) {
+            for (var j = 0; j < this.size; j++) {
+                var value = this.grid[i][j];
+
+                if (value) {
+                    sum -= value + 1;
+                }
+            }
+        }
+
+        if (sum) throw new Error('invalid grid');
     },
     initCells: function() {
         this.cells = [];
