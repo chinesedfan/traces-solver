@@ -65,7 +65,7 @@ describe('traversePair', function() {
     it('0,2 to 0,0', function() {
         GridUtils.traversePair(0,2, 0,0, function(i, j, off, dir) {
             x += grid[i][j];
-            assert.equal(off, j - 2);
+            assert.equal(off, 2 - j);
             assert.equal(dir, '<');
             return true;
         });
@@ -83,7 +83,7 @@ describe('traversePair', function() {
     it('2,0 to 0,0', function() {
         GridUtils.traversePair(2,0, 0,0, function(i, j, off, dir) {
             x += grid[i][j];
-            assert.equal(off, i - 2);
+            assert.equal(off, 2 - i);
             assert.equal(dir, '^');
             return true;
         });
@@ -101,7 +101,7 @@ describe('traversePair', function() {
     it('2,2 to 0,2', function() {
         GridUtils.traversePair(2,2, 0,2, function(i, j, off, dir) {
             x += grid[i][j];
-            assert.equal(off, i - 2);
+            assert.equal(off, 2 - i);
             assert.equal(dir, '^');
             return true;
         });
@@ -119,7 +119,7 @@ describe('traversePair', function() {
     it('2,2 to 2,0', function() {
         GridUtils.traversePair(2,2, 2,0, function(i, j, off, dir) {
             x += grid[i][j];
-            assert.equal(off, j - 2);
+            assert.equal(off, 2 - j);
             assert.equal(dir, '<');
             return true;
         });
