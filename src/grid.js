@@ -5,13 +5,15 @@ var NumberCell = require('./numbercell.js');
 function Grid(grid) {
     this.grid = grid;
     this.size = grid.length;
-    this.debug = false;
+
+    this.debug = false; // whether print more informations
+    this.perf = false; // whether log the total steps
     this.log = console.log;
 
     this.initValidate();
     this.initCells();
     this.initCandidates();
-    // this.pruneCandidates();
+    this.pruneCandidates();
 }
 Grid.prototype = {
     constructor: Grid,
@@ -141,6 +143,7 @@ Grid.prototype = {
             if (this.cursor) break;
         }
 
+        var step = 0;
         while (!this.stopped) {
             if (this.step()) {
                 this.forward = true;
@@ -157,8 +160,10 @@ Grid.prototype = {
                 this.forward = false;
                 this.movePrev();
             }
+            step++;
         }
 
+        if (this.perf) this.log('total steps = ' + step);
         if (this.cursor.x == 0 && this.cursor.y == 0) error('failed to solve');
     },
     validate: function() {
@@ -234,9 +239,9 @@ Grid.prototype = {
         // ignore if it is a number
         if (cell instanceof NumberCell) return this.forward;
         // ignore if it is assigned by another cell
-        if (cell.assigned) {
-            return this.forward;
-        }
+        if (cell.assigned) return this.forward;
+        // ignore if it is confirmed
+        if (cell.candidates.length == 1 && cell.picked == 0) return this.forward;
 
         var picked = cell.picked + 1;
         // need to unpick
