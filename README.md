@@ -1,4 +1,4 @@
-## traces-solver
+## traces-solver [![npm version](https://badge.fury.io/js/traces-solver.svg)](https://badge.fury.io/js/traces-solver) [![Build Status](https://travis-ci.org/chinesedfan/traces-solver.svg?branch=master)](https://travis-ci.org/chinesedfan/traces-solver) [![License](https://img.shields.io/github/license/chinesedfan/traces-solver.svg)][license]
 
 Simple solver for the iOS game [logic traces](https://itunes.apple.com/us/app/logic-track-traces-puzzles/id1081609724).
 
@@ -25,3 +25,9 @@ var grid = new Grid(input);
 grid.solve();
 grid.print();
 ```
+
+## License
+
+[MIT][license]
+
+[license]: https://github.com/chinesedfan/traces-solver/blob/master/LICENSE
